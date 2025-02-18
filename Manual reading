@@ -1,0 +1,77 @@
+import pandas as pd
+import os
+
+# Manually specify dataset file paths
+dataset1 = pd.read_csv("path/to/dataset1.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset2 = pd.read_csv("path/to/dataset2.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset3 = pd.read_csv("path/to/dataset3.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset4 = pd.read_csv("path/to/dataset4.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset5 = pd.read_csv("path/to/dataset5.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset6 = pd.read_csv("path/to/dataset6.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset7 = pd.read_csv("path/to/dataset7.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset8 = pd.read_csv("path/to/dataset8.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset9 = pd.read_csv("path/to/dataset9.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset10 = pd.read_csv("path/to/dataset10.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset11 = pd.read_csv("path/to/dataset11.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset12 = pd.read_csv("path/to/dataset12.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset13 = pd.read_csv("path/to/dataset13.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset14 = pd.read_csv("path/to/dataset14.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset15 = pd.read_csv("path/to/dataset15.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset16 = pd.read_csv("path/to/dataset16.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset17 = pd.read_csv("path/to/dataset17.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset18 = pd.read_csv("path/to/dataset18.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+dataset19 = pd.read_csv("path/to/dataset19.csv", encoding='Latin1', delimiter=';', engine='python', on_bad_lines='skip')
+
+# Store datasets in a dictionary
+dataframes = {
+    "dataset1": dataset1,
+    "dataset2": dataset2,
+    "dataset3": dataset3,
+    "dataset4": dataset4,
+    "dataset5": dataset5,
+    "dataset6": dataset6,
+    "dataset7": dataset7,
+    "dataset8": dataset8,
+    "dataset9": dataset9,
+    "dataset10": dataset10,
+    "dataset11": dataset11,
+    "dataset12": dataset12,
+    "dataset13": dataset13,
+    "dataset14": dataset14,
+    "dataset15": dataset15,
+    "dataset16": dataset16,
+    "dataset17": dataset17,
+    "dataset18": dataset18,
+    "dataset19": dataset19
+}
+
+# Display summary of imported datasets
+print("\nSummary of Imported Datasets:")
+for name, df in dataframes.items():
+    print(f"{name}: {df.shape[0]} rows, {df.shape[1]} columns")
+
+# Function to retrieve customer purchase history
+def get_customer_purchase_history(customer_id):
+    customer_id = str(customer_id)  # Ensure consistency in filtering
+    customer_data = []  # List to store filtered data
+
+    for name, df in dataframes.items():
+        if "customer_id" in df.columns:
+            customer_df = df[df["customer_id"] == customer_id].copy()  # Filter for the customer
+            
+            if not customer_df.empty:
+                customer_data.append(customer_df)  # Append to list
+
+    if customer_data:
+        final_df = pd.concat(customer_data, ignore_index=True).drop_duplicates()  # Remove duplicates
+        final_df = final_df.dropna(subset=["customer_id"])  # Drop rows where customer_id is NaN
+        return final_df
+    else:
+        return pd.DataFrame()  # Return empty DataFrame if no data found
+
+# Example Usage
+customer_id = input("Enter the customer ID to search: ").strip()
+result_df = get_customer_purchase_history(customer_id)
+
+# Display the result
+print(result_df)
