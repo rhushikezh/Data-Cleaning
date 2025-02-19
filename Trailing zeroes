@@ -1,0 +1,16 @@
+import pandas as pd
+
+# Sample dataset with inconsistent leading zeros and negatives
+data = {"Amount": ["0001234,00", "0000456,78", "-0000890,00", "00100,50"]}
+
+# Create DataFrame
+df = pd.DataFrame(data)
+
+# Function to clean the amount
+def clean_amount(amount):
+    return str(int(amount.replace(",", ".")))  # Convert ',' to '.' and remove leading zeros
+
+# Apply function to the "Amount" column
+df["Cleaned_Amount"] = df["Amount"].apply(clean_amount)
+
+print(df)
