@@ -1,0 +1,38 @@
+import networkx as nx
+import pandas as pd
+import matplotlib.pyplot as plt
+from collections import defaultdict
+
+# Sample Data
+data = pd.DataFrame({
+    "Name": ["Alice", "Bob", "Charlie", "Dave", "Eve", "Frank"],
+    "Address": ["123 Main St", "456 Park Ave", "123 Main St", "789 Elm St", "123 Main St", "456 Park Ave"]
+})
+
+# Step 1: Group by Address
+address_groups = data.groupby("Address")["Name"].apply(list)
+
+# Step 2: Create Adjacency List
+adj_list = defaultdict(list)
+for people in address_groups:
+    for i in range(len(people)):
+        for j in range(i + 1, len(people)):
+            adj_list[people[i]].append(people[j])
+            adj_list[people[j]].append(people[i])  # Undirected graph
+
+# Step 3: Create Graph using NetworkX
+G = nx.Graph()
+
+# Add edges to the graph
+for person, neighbors in adj_list.items():
+    for neighbor in neighbors:
+        G.add_edge(person, neighbor)
+
+# Step 4: Draw the Graph
+plt.figure(figsize=(6, 4))
+pos = nx.spring_layout(G, seed=42)  # Position nodes nicely
+nx.draw(G, pos, with_labels=True, node_color="lightblue", edge_color="gray", 
+        node_size=2000, font_size=10, width=2)
+
+plt.title("Customer Network Based on Shared Addresses")
+plt.show()
