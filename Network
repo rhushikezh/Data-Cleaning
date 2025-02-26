@@ -1,0 +1,50 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# Sample Data
+customers = [
+    {"name": "Alice", "id": "C001", "address": "123 Main St", "phone": "555-1234", "email": "alice@email.com"},
+    {"name": "Bob", "id": "C002", "address": "456 Park Ave", "phone": "555-5678", "email": "bob@email.com"},
+    {"name": "Charlie", "id": "C003", "address": "789 Elm St", "phone": "555-9012", "email": "charlie@email.com"}
+]
+
+# Create a graph
+G = nx.Graph()
+
+# Edge colors mapping
+edge_colors = {
+    "address": "blue",
+    "phone": "green",
+    "email": "red"
+}
+
+# Add nodes and edges
+for customer in customers:
+    name, cust_id = customer["name"], customer["id"]
+    
+    # Add nodes
+    G.add_node(name, type="Customer Name")
+    G.add_node(cust_id, type="Customer ID")
+    
+    # Add edges
+    G.add_edge(name, cust_id, relationship="ID", color="black")  # Connection between name and ID
+    G.add_edge(cust_id, customer["address"], relationship="Address", color=edge_colors["address"])
+    G.add_edge(cust_id, customer["phone"], relationship="Phone", color=edge_colors["phone"])
+    G.add_edge(cust_id, customer["email"], relationship="Email", color=edge_colors["email"])
+
+# Extract edge attributes
+edge_labels = {(u, v): d["relationship"] for u, v, d in G.edges(data=True)}
+edge_colors_list = [d["color"] for _, _, d in G.edges(data=True)]
+
+# Draw the network
+plt.figure(figsize=(8, 6))
+pos = nx.spring_layout(G, seed=42)  # Layout for better visualization
+
+nx.draw(G, pos, with_labels=True, node_color="lightblue", edge_color=edge_colors_list,
+        node_size=2000, font_size=10, width=2)
+
+# Draw edge labels
+nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color="black")
+
+# Show the plot
+plt.show()
