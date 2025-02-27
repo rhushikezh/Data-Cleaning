@@ -1,0 +1,17 @@
+import pandas as pd
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
+
+# Sample DataFrames
+df1 = pd.DataFrame({'name': ['John Doe', 'Jane Smith', 'Emily Davis']})
+df2 = pd.DataFrame({'name': ['Doe John', 'Janet Smith', 'Emilie Davis']})
+
+# Function to find the best match
+def get_best_match(name, choices, threshold=80):
+    match, score = process.extractOne(name, choices, scorer=fuzz.token_sort_ratio)
+    return match if score >= threshold else None
+
+# Apply fuzzy matching
+df1['best_match'] = df1['name'].apply(lambda x: get_best_match(x, df2['name'].tolist()))
+
+print(df1)
