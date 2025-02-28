@@ -1,0 +1,39 @@
+import pandas as pd
+import re
+
+# Sample DataFrame with missing NAME values but extra text
+df = pd.DataFrame({
+    'text': [
+        "SomeTextACODE:AX100028372926ABCD",  # NAME exists, stop at 'A'
+        "RandomACODE:0726-74847-93726XYZ",  # NAME exists, stop at 'X'
+        "MoreDataACODE:4567-9832LMN",  # NAME exists, stop at 'L'
+        "ExtraACODE:3827-12987-0911MoreText",  # NAME exists, stop at 'M'
+        "NoNameACODE:99999XYZ-Extra",  # NAME is missing, stop at 'X'
+        "EdgeCaseACODE:1234SomethingMore"  # NAME is missing, stop at 'S'
+    ],
+    'NAME': ["A123", "X567", "L999", "M555", None, ""]  # Some missing/empty NAME values
+})
+
+# Function to extract the ACODE value
+def extract_acode(text, name):
+    # Handle the case where NAME is empty or None
+    stop_char = name[0] if name and not pd.isna(name) else None
+    
+    # If stop_char is given (i.e., NAME is not empty), stop extraction at the first character of NAME
+    if stop_char:
+        pattern = rf'ACODE:([A-Z0-9\-]*)(?={re.escape(stop_char)})'  # Stop at NAME first character
+    else:
+        # If NAME is missing or empty, stop extraction at the first non-digit after the last digit
+        pattern = r'ACODE:([A-Z0-9\-]*)(?=[^\d-])'  # Stop at the first non-digit letter after code
+    
+    # Perform regex search
+    match = re.search(pattern, text)
+    return match.group(1) if match else None
+
+# Ensure NAME is a string and handle missing values
+df['NAME'] = df['NAME'].fillna("").astype(str)  # Convert NaN to empty string
+
+# Apply function
+df['acode'] = df.apply(lambda row: extract_acode(row['text'], row['NAME']), axis=1)
+
+print(df)
