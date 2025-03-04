@@ -1,0 +1,45 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
+# Create a graph
+G = nx.Graph()
+
+# Define nodes (customers and non-customers)
+nodes = {
+    "Alice": "customer", "Bob": "customer", "Charlie": "non-customer",
+    "David": "customer", "Eve": "non-customer", "Frank": "customer"
+}
+
+# Add nodes with attributes
+for node, status in nodes.items():
+    G.add_node(node, status=status)
+
+# Define edges with relationships
+edges = [
+    ("Alice", "Bob", "phone"),
+    ("Alice", "Charlie", "address"),
+    ("Bob", "David", "email"),
+    ("Charlie", "Eve", "family"),
+    ("David", "Frank", "phone"),
+    ("Eve", "Frank", "address"),
+]
+
+# Add edges with labels
+for u, v, relation in edges:
+    G.add_edge(u, v, relation=relation)
+
+# Define colors based on customer status
+node_colors = ["blue" if G.nodes[n]["status"] == "customer" else "grey" for n in G.nodes]
+
+# Draw the network
+plt.figure(figsize=(8, 6))
+pos = nx.spring_layout(G, seed=42)  # Positioning of nodes
+nx.draw(G, pos, with_labels=True, node_color=node_colors, edge_color="black", node_size=2000, font_size=10)
+
+# Draw edge labels
+edge_labels = {(u, v): d["relation"] for u, v, d in G.edges(data=True)}
+nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=8, label_pos=0.5)
+
+# Show the plot
+plt.title("Customer Relationship Network")
+plt.show()
