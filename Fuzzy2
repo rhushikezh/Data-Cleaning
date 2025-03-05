@@ -1,0 +1,26 @@
+import pandas as pd
+from fuzzywuzzy import fuzz, process
+from collections import Counter
+
+# Sample data
+names = ["Jon Doe", "John Doe", "Jhn Doe", "J. Doe", "Jane Doe", "Jane D.", "Janie Doe"]
+
+# Create a dictionary to store clusters
+clusters = {}
+
+# Iterate over names and group similar ones
+for name in names:
+    match, score = process.extractOne(name, clusters.keys(), scorer=fuzz.token_sort_ratio)
+    if score > 85:  # Set a similarity threshold
+        clusters[match].append(name)
+    else:
+        clusters[name] = [name]
+
+# Choose the most frequent name variant in each cluster
+final_names = {key: Counter(value).most_common(1)[0][0] for key, value in clusters.items()}
+
+# Replace variations in the dataset
+df = pd.DataFrame(names, columns=["Name"])
+df["Corrected Name"] = df["Name"].apply(lambda x: final_names.get(x, x))
+
+print(df)
